@@ -1,7 +1,7 @@
 {
   "name": "Notification Banner Reloaded",
   "description": "Configure notification banner position and animation to your liking",
-  "uuid": "notification-banner-reloaded@mjakubowski.github.com",
+  "uuid": "notification-banner-reloaded@marcinjakubowski.github.com",
   "shell-version": [
     "41",
     "40"
