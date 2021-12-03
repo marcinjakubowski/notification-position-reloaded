@@ -40,6 +40,7 @@ function patcher(obj, method, original, patch) {
     eval(`${obj}.prototype.${method} = ${newBody}`);
 }
 
+const getMessageTraySize = () => ({ width, height } = Main.layoutManager.getWorkAreaForMonitor(global.display.get_current_monitor()));
 
 const originalShow = MessageTray.prototype._showNotification;
 const originalHide = MessageTray.prototype._hideNotification;
@@ -52,10 +53,10 @@ function calcTarget(self) {
             x = 0;
             break;
         case 1: // right
-            x = global.screen_width - self._banner.width;
+            x = getMessageTraySize().width - self._banner.width;
             break;
         case 2: // center
-            x = (global.screen_width - self._banner.width) / 2.0;
+            x = (getMessageTraySize().width - self._banner.width) / 2.0;
             break;
     }
     switch (ANCHOR_VERTICAL) {
@@ -63,13 +64,12 @@ function calcTarget(self) {
             y = 0;
             break;
         case 1: // bottom
-            y = global.screen_height - self._banner.height;
+            y = getMessageTraySize().height - self._banner.height;
             break;
         case 2: // center
-            y = (global.screen_height - self._banner.height) / 2.0;
+            y = (getMessageTraySize().height - self._banner.height) / 2.0;
             break;
     }
-
     return { x, y }
 }
 
@@ -80,13 +80,13 @@ function calcHide(self) {
             x = -self._banner.width;
             break;
         case 1: // from right
-            x = global.screen_width;
+            x = getMessageTraySize().width;
             break;
         case 2: // from top
             y = -self._banner.height
             break;
         case 3: // from bottom
-            y = global.screen_height
+            y = getMessageTraySize().height
             break;
     }
 
