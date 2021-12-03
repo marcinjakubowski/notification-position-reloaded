@@ -1,0 +1,33 @@
+<schemalist gettext-domain="gnome-shell-extensions">
+  <schema id="org.gnome.shell.extensions.notification-banner-reloaded"
+      path="/org/gnome/shell/extensions/notification-banner-reloaded/">
+
+    <key type="i" name="animation-time">
+        <default>200</default>
+        <summary>Duration of the show/hide animation</summary>
+        <description>Duration of the show/hide animation, in milliseconds</description>
+        <range min="100" max="5000"/>
+    </key>
+
+    <key type="i" name="anchor-vertical">
+        <default>0</default>
+        <summary>Vertical position of the banner</summary>
+        <description></description>
+        <range min="0" max="2"/>
+    </key>
+
+    <key type="i" name="anchor-horizontal">
+        <default>2</default>
+        <summary>Horizontal position of the banner</summary>
+        <description></description>
+        <range min="0" max="2"/>
+    </key>
+
+    <key type="i" name="animation-direction">
+        <default>2</default>
+        <summary>Animation direction</summary>
+        <description></description>
+        <range min="0" max="3"/>
+    </key>
+  </schema>
+</schemalist>
