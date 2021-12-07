@@ -23,7 +23,6 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Prefs = Me.imports.prefs;
 const Main = imports.ui.main;
 const MessageTray = imports.ui.messageTray.MessageTray;
-const Lang = imports.lang;
 
 const BannerBin = Main.messageTray._bannerBin;
 
@@ -150,8 +149,7 @@ class Extension {
 
     _loadSettings() {
         this._settings = Prefs.SettingsSchema;
-        this._settingsChangedId = this._settings.connect('changed',
-            Lang.bind(this, this._onSettingsChange));
+        this._settingsChangedId = this._settings.connect('changed', this._onSettingsChange.bind(this));
         this._fetchSettings();
     }
 
@@ -191,6 +189,10 @@ class Extension {
         BannerBin.x = 0
         BannerBin.y = 0
         this.restore()
+        if (this._settingsChangedId) {
+            this._settings.disconnect(this._settingsChangedId);
+            this._settingsChangedId = null;
+        }
         this._settings = null;
 
     }

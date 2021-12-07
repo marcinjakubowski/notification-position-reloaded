@@ -21,13 +21,9 @@
     https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator
     https://extensions.gnome.org/extension/779/clipboard-indicator/
 */
-
-
-
 const GObject = imports.gi.GObject;
 const Gtk = imports.gi.Gtk;
 const Gio = imports.gi.Gio;
-const Lang = imports.lang;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
@@ -51,9 +47,8 @@ function init() {
         Gettext.bindtextdomain('notification-banner-reloaded', localeDir.get_path());
 }
 
-const App = new Lang.Class({
-    Name: 'NotificationBannerReloaded.App',
-    _init: function() {
+class Preferences {
+    constructor() {
         this.main = new Gtk.Grid({
             margin_top: 10,
             margin_bottom: 10,
@@ -83,7 +78,7 @@ const App = new Lang.Class({
         });
 
         let rendererText = new Gtk.CellRendererText();
-        for (widget of [this.anchorHorizontal, this.anchorVertical, this.animationDirection]) {
+        for (const widget of [this.anchorHorizontal, this.anchorVertical, this.animationDirection]) {
             widget.pack_start(rendererText, false);
             widget.add_attribute(rendererText, "text", 0);
         }
@@ -140,9 +135,9 @@ const App = new Lang.Class({
         SettingsSchema.bind(Fields.ANCHOR_VERTICAL,     this.anchorVertical,        'active', Gio.SettingsBindFlags.DEFAULT);
         SettingsSchema.bind(Fields.ANIMATION_DIRECTION, this.animationDirection,    'active', Gio.SettingsBindFlags.DEFAULT);
         SettingsSchema.bind(Fields.ANIMATION_TIME,      this.animationTime,         'value',  Gio.SettingsBindFlags.DEFAULT);
-    },
+    }
 
-    _create_options : function(opts){
+    _create_options(opts) {
         let options = opts.map(function (v) { return { name: v }});
         let liststore = new Gtk.ListStore();
         liststore.set_column_types([GObject.TYPE_STRING])
@@ -153,10 +148,10 @@ const App = new Lang.Class({
         }
         return liststore;
     }
-});
+};
 
-function buildPrefsWidget(){
-    let widget = new App();
+function buildPrefsWidget() {
+    let widget = new Preferences();
     return widget.main;
 }
 
