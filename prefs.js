@@ -99,7 +99,7 @@ class Preferences {
             halign: Gtk.Align.START
         });
         let animationTimeLabel  = new Gtk.Label({
-            label: _("Animation Time"),
+            label: _("Animation Time (ms)"),
             hexpand: true,
             halign: Gtk.Align.START
         });
