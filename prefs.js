@@ -43,15 +43,7 @@ var Fields = {
 
 const SCHEMA_NAME = 'org.gnome.shell.extensions.notification-banner-reloaded';
 
-const getSchema = function () {
-    let schemaDir = Me.dir.get_child('schemas').get_path();
-    let schemaSource = Gio.SettingsSchemaSource.new_from_directory(schemaDir, Gio.SettingsSchemaSource.get_default(), false);
-    let schema = schemaSource.lookup(SCHEMA_NAME, false);
-
-    return new Gio.Settings({ settings_schema: schema });
-};
-
-var SettingsSchema = getSchema();
+var SettingsSchema = ExtensionUtils.getSettings(SCHEMA_NAME);
 
 function init() {
     let localeDir = Me.dir.get_child('locale');

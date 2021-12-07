@@ -146,14 +146,12 @@ class Extension {
     constructor() {
         this._previous_y_align = BannerBin.get_y_align();
         this._previous_x_align = BannerBin.get_x_align();
-        this._loadSettings();
     }
 
     _loadSettings() {
         this._settings = Prefs.SettingsSchema;
         this._settingsChangedId = this._settings.connect('changed',
             Lang.bind(this, this._onSettingsChange));
-
         this._fetchSettings();
     }
 
@@ -170,6 +168,7 @@ class Extension {
     }
 
     enable() {
+        this._loadSettings();        
         // generally alignment can be controller with START/CENTER/END
         // but CENTER and END are problematic to implement animations with
         // (especially x -> END and animations from left/right)
@@ -192,6 +191,7 @@ class Extension {
         BannerBin.x = 0
         BannerBin.y = 0
         this.restore()
+        this._settings = null;
 
     }
 
