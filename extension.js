@@ -20,12 +20,10 @@ const { Clutter, Gio, GLib, GObject, Meta, Shell, St } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const Prefs = Me.imports.prefs;
 const Main = imports.ui.main;
 const MessageTray = imports.ui.messageTray.MessageTray;
-
+const Utils = Me.imports.utils;
 const BannerBin = Main.messageTray._bannerBin;
-
 const { NOTIFICATION_TIMEOUT, HIDE_TIMEOUT, LONGER_HIDE_TIMEOUT, IDLE_TIME, State, Urgency } = imports.ui.messageTray;
 
 let ANIMATION_TIME = 200;
@@ -148,16 +146,16 @@ class Extension {
     }
 
     _loadSettings() {
-        this._settings = Prefs.SettingsSchema;
+        this._settings = ExtensionUtils.getSettings();
         this._settingsChangedId = this._settings.connect('changed', this._onSettingsChange.bind(this));
         this._fetchSettings();
     }
 
     _fetchSettings() {
-        ANCHOR_VERTICAL         = this._settings.get_int(Prefs.Fields.ANCHOR_VERTICAL);
-        ANCHOR_HORIZONTAL       = this._settings.get_int(Prefs.Fields.ANCHOR_HORIZONTAL);
-        ANIMATION_DIRECTION     = this._settings.get_int(Prefs.Fields.ANIMATION_DIRECTION);
-        ANIMATION_TIME          = this._settings.get_int(Prefs.Fields.ANIMATION_TIME);
+        ANCHOR_VERTICAL         = this._settings.get_int(Utils.PrefFields.ANCHOR_VERTICAL);
+        ANCHOR_HORIZONTAL       = this._settings.get_int(Utils.PrefFields.ANCHOR_HORIZONTAL);
+        ANIMATION_DIRECTION     = this._settings.get_int(Utils.PrefFields.ANIMATION_DIRECTION);
+        ANIMATION_TIME          = this._settings.get_int(Utils.PrefFields.ANIMATION_TIME);
     }
 
     _onSettingsChange() {
@@ -180,7 +178,6 @@ class Extension {
         for (const { obj, method, original, patch } of patches) {
             patcher(obj, method, original, patch)
         }
-
     }
 
     disable() {

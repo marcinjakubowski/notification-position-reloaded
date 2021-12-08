@@ -26,20 +26,11 @@ const Gtk = imports.gi.Gtk;
 const Gio = imports.gi.Gio;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
+const Utils = Me.imports.utils;
 
 const Gettext = imports.gettext;
 const _ = Gettext.domain('notification-banner-reloaded').gettext;
 
-var Fields = {
-    ANCHOR_VERTICAL        : 'anchor-vertical',
-    ANCHOR_HORIZONTAL      : 'anchor-horizontal',
-    ANIMATION_TIME         : 'animation-time',
-    ANIMATION_DIRECTION    : 'animation-direction',
-};
-
-const SCHEMA_NAME = 'org.gnome.shell.extensions.notification-banner-reloaded';
-
-var SettingsSchema = ExtensionUtils.getSettings(SCHEMA_NAME);
 
 function init() {
     let localeDir = Me.dir.get_child('locale');
@@ -130,11 +121,12 @@ class Preferences {
         addRow(anchorVerticalLabel,       this.anchorVertical);
         addRow(animationDirectionLabel,   this.animationDirection);
         addRow(animationTimeLabel,        this.animationTime);
-
-        SettingsSchema.bind(Fields.ANCHOR_HORIZONTAL,   this.anchorHorizontal,      'active', Gio.SettingsBindFlags.DEFAULT);
-        SettingsSchema.bind(Fields.ANCHOR_VERTICAL,     this.anchorVertical,        'active', Gio.SettingsBindFlags.DEFAULT);
-        SettingsSchema.bind(Fields.ANIMATION_DIRECTION, this.animationDirection,    'active', Gio.SettingsBindFlags.DEFAULT);
-        SettingsSchema.bind(Fields.ANIMATION_TIME,      this.animationTime,         'value',  Gio.SettingsBindFlags.DEFAULT);
+        
+        const settings = ExtensionUtils.getSettings();
+        settings.bind(Utils.PrefFields.ANCHOR_HORIZONTAL,   this.anchorHorizontal,      'active', Gio.SettingsBindFlags.DEFAULT);
+        settings.bind(Utils.PrefFields.ANCHOR_VERTICAL,     this.anchorVertical,        'active', Gio.SettingsBindFlags.DEFAULT);
+        settings.bind(Utils.PrefFields.ANIMATION_DIRECTION, this.animationDirection,    'active', Gio.SettingsBindFlags.DEFAULT);
+        settings.bind(Utils.PrefFields.ANIMATION_TIME,      this.animationTime,         'value',  Gio.SettingsBindFlags.DEFAULT);
     }
 
     _create_options(opts) {
