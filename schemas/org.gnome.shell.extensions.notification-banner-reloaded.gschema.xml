@@ -23,6 +23,20 @@
         <range min="0" max="2"/>
     </key>
 
+    <key type="i" name="padding-vertical">
+        <default>0</default>
+        <summary>Vertical padding of the banner</summary>
+        <description></description>
+        <range min="0" max="1000"/>
+    </key>
+
+    <key type="i" name="padding-horizontal">
+        <default>0</default>
+        <summary>Horizontal padding of the banner</summary>
+        <description></description>
+        <range min="0" max="1000"/>
+    </key>
+
     <key type="i" name="animation-direction">
         <default>2</default>
         <summary>Animation direction</summary>
