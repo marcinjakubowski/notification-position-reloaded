@@ -51,6 +51,20 @@ class Preferences {
             row_homogeneous: false
         });
 
+        this.paddingHorizontal = new Gtk.SpinButton({
+            adjustment: new Gtk.Adjustment({
+                lower: 0,
+                upper: 1000,
+                step_increment: 1
+            })
+        });
+        this.paddingVertical = new Gtk.SpinButton({
+            adjustment: new Gtk.Adjustment({
+                lower: 0,
+                upper: 1000,
+                step_increment: 1
+            })
+        });
         this.animationTime = new Gtk.SpinButton({
             adjustment: new Gtk.Adjustment({
                 lower: 100,
@@ -81,6 +95,16 @@ class Preferences {
         });
         let anchorVerticalLabel = new Gtk.Label({
             label: _("Vertical Position"),
+            hexpand: true,
+            halign: Gtk.Align.START
+        });
+        let paddingHorizontalLabel  = new Gtk.Label({
+            label: _("Horizontal Padding"),
+            hexpand: true,
+            halign: Gtk.Align.START
+        });
+        let paddingVerticalLabel  = new Gtk.Label({
+            label: _("Vertial Padding"),
             hexpand: true,
             halign: Gtk.Align.START
         });
@@ -119,12 +143,16 @@ class Preferences {
 
         addRow(anchorHorizontalLabel,     this.anchorHorizontal);
         addRow(anchorVerticalLabel,       this.anchorVertical);
+        addRow(paddingHorizontalLabel,    this.paddingHorizontal);
+        addRow(paddingVerticalLabel,      this.paddingVertical);
         addRow(animationDirectionLabel,   this.animationDirection);
         addRow(animationTimeLabel,        this.animationTime);
-        
+
         const settings = ExtensionUtils.getSettings();
         settings.bind(Utils.PrefFields.ANCHOR_HORIZONTAL,   this.anchorHorizontal,      'active', Gio.SettingsBindFlags.DEFAULT);
         settings.bind(Utils.PrefFields.ANCHOR_VERTICAL,     this.anchorVertical,        'active', Gio.SettingsBindFlags.DEFAULT);
+        settings.bind(Utils.PrefFields.PADDING_HORIZONTAL,  this.paddingHorizontal,     'value',  Gio.SettingsBindFlags.DEFAULT);
+        settings.bind(Utils.PrefFields.PADDING_VERTICAL,    this.paddingVertical,       'value',  Gio.SettingsBindFlags.DEFAULT);
         settings.bind(Utils.PrefFields.ANIMATION_DIRECTION, this.animationDirection,    'active', Gio.SettingsBindFlags.DEFAULT);
         settings.bind(Utils.PrefFields.ANIMATION_TIME,      this.animationTime,         'value',  Gio.SettingsBindFlags.DEFAULT);
     }

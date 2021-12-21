@@ -30,6 +30,8 @@ let ANIMATION_TIME = 200;
 let ANIMATION_DIRECTION = 2;
 let ANCHOR_VERTICAL = 0;
 let ANCHOR_HORIZONTAL = 2;
+let PADDING_VERTICAL = 0;
+let PADDING_HORIZONTAL = 0;
 
 function patcher(obj, method, original, patch) {
     const body = eval(`${obj}.prototype.${method}.toString()`);
@@ -47,10 +49,10 @@ function calcTarget(self) {
     let x = 0, y = 0;
     switch (ANCHOR_HORIZONTAL) {
         case 0: // left
-            x = 0;
+            x = 0 + PADDING_HORIZONTAL;
             break;
         case 1: // right
-            x = getMessageTraySize().width - self._banner.width;
+            x = getMessageTraySize().width - self._banner.width - PADDING_HORIZONTAL;
             break;
         case 2: // center
             x = (getMessageTraySize().width - self._banner.width) / 2.0;
@@ -58,10 +60,10 @@ function calcTarget(self) {
     }
     switch (ANCHOR_VERTICAL) {
         case 0: // top
-            y = 0;
+            y = 0 + PADDING_VERTICAL;
             break;
         case 1: // bottom
-            y = getMessageTraySize().height - self._banner.height;
+            y = getMessageTraySize().height - self._banner.height - PADDING_VERTICAL;
             break;
         case 2: // center
             y = (getMessageTraySize().height - self._banner.height) / 2.0;
@@ -154,6 +156,8 @@ class Extension {
     _fetchSettings() {
         ANCHOR_VERTICAL         = this._settings.get_int(Utils.PrefFields.ANCHOR_VERTICAL);
         ANCHOR_HORIZONTAL       = this._settings.get_int(Utils.PrefFields.ANCHOR_HORIZONTAL);
+        PADDING_VERTICAL        = this._settings.get_int(Utils.PrefFields.PADDING_VERTICAL);
+        PADDING_HORIZONTAL      = this._settings.get_int(Utils.PrefFields.PADDING_HORIZONTAL);
         ANIMATION_DIRECTION     = this._settings.get_int(Utils.PrefFields.ANIMATION_DIRECTION);
         ANIMATION_TIME          = this._settings.get_int(Utils.PrefFields.ANIMATION_TIME);
     }
