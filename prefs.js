@@ -113,7 +113,7 @@ class Preferences {
             halign: Gtk.Align.START
         });
         let paddingVerticalLabel  = new Gtk.Label({
-            label: _("Vertial Padding"),
+            label: _("Vertical Padding"),
             hexpand: true,
             halign: Gtk.Align.START
         });
