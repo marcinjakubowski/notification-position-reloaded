@@ -31,6 +31,15 @@ const Utils = Me.imports.utils;
 const Gettext = imports.gettext;
 const _ = Gettext.domain('notification-banner-reloaded').gettext;
 
+// API change 3 -> 4
+function addBox(box, child) {
+    if (imports.gi.versions.Gtk.startsWith("3")) {
+        box.add(child);
+    }
+    else {
+        box.append(child);
+    }
+}
 
 function init() {
     let localeDir = Me.dir.get_child('locale');
@@ -126,7 +135,7 @@ class Preferences {
 
                 if (input instanceof Gtk.Switch) {
                     inputWidget = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL,});
-                    inputWidget.append(input);
+                    addBox(inputWidget, input);
                 }
 
                 if (label) {
@@ -171,7 +180,11 @@ class Preferences {
 };
 
 function buildPrefsWidget() {
+    let frame = new Gtk.Box();
     let widget = new Preferences();
-    return widget.main;
+    addBox(frame, widget.main);
+    if (frame.show_all)
+	    frame.show_all();
+    return frame;
 }
 
