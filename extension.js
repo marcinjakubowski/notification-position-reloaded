@@ -32,6 +32,7 @@ let ANCHOR_VERTICAL = 0;
 let ANCHOR_HORIZONTAL = 2;
 let PADDING_VERTICAL = 0;
 let PADDING_HORIZONTAL = 0;
+let ALWAYS_MINIMIZE = 0;
 
 function patcher(obj, method, original, patch) {
     const body = eval(`${obj}.prototype.${method}.toString()`);
@@ -141,6 +142,13 @@ const patches = [
     }
 ];
 
+const always_minimize_patch = {
+    obj: "MessageTray",
+    method: "_updateShowingNotification",
+    original: "this._expandBanner(true)",
+    patch: "// always minimized setting enabled by notification-banner-reloaded ... this._expandBanner(true)",
+};
+
 class Extension {
     constructor() {
         this._previous_y_align = BannerBin.get_y_align();
@@ -160,6 +168,7 @@ class Extension {
         PADDING_HORIZONTAL      = this._settings.get_int(Utils.PrefFields.PADDING_HORIZONTAL);
         ANIMATION_DIRECTION     = this._settings.get_int(Utils.PrefFields.ANIMATION_DIRECTION);
         ANIMATION_TIME          = this._settings.get_int(Utils.PrefFields.ANIMATION_TIME);
+        ALWAYS_MINIMIZE         = this._settings.get_int(Utils.PrefFields.ALWAYS_MINIMIZE);
     }
 
     _onSettingsChange() {
@@ -178,9 +187,14 @@ class Extension {
         let y_align = Clutter.ActorAlign.START;
         BannerBin.set_x_align(x_align);
         BannerBin.set_y_align(y_align);
-        this.restore()
+        this.restore();
         for (const { obj, method, original, patch } of patches) {
             patcher(obj, method, original, patch)
+        }
+
+        if (ALWAYS_MINIMIZE) {
+            const { obj, method, original, patch } = always_minimize_patch;
+            patcher(obj, method, original, patch);
         }
     }
 

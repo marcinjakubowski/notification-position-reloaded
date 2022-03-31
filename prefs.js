@@ -90,9 +90,12 @@ class Preferences {
         this.animationDirection = new Gtk.ComboBox({
             model: this._create_options([ _('Slide from Left'), _('Slide from Right'), _('Slide from Top'), _('Slide from Bottom')])
         });
+        this.alwaysMinimize = new Gtk.ComboBox({
+          model: this._create_options([ _('false'), _('true')])
+        });
 
         let rendererText = new Gtk.CellRendererText();
-        for (const widget of [this.anchorHorizontal, this.anchorVertical, this.animationDirection]) {
+        for (const widget of [this.anchorHorizontal, this.anchorVertical, this.animationDirection, this.alwaysMinimize]) {
             widget.pack_start(rendererText, false);
             widget.add_attribute(rendererText, "text", 0);
         }
@@ -127,6 +130,11 @@ class Preferences {
             hexpand: true,
             halign: Gtk.Align.START
         });
+        let alwaysMinimizeLabel  = new Gtk.Label({
+          label: _("Always Minimize"),
+          hexpand: true,
+          halign: Gtk.Align.START
+        });
 
         const addRow = ((main) => {
             let row = 0;
@@ -156,6 +164,7 @@ class Preferences {
         addRow(paddingVerticalLabel,      this.paddingVertical);
         addRow(animationDirectionLabel,   this.animationDirection);
         addRow(animationTimeLabel,        this.animationTime);
+        addRow(alwaysMinimizeLabel,       this.alwaysMinimize);
 
         const settings = ExtensionUtils.getSettings();
         settings.bind(Utils.PrefFields.ANCHOR_HORIZONTAL,   this.anchorHorizontal,      'active', Gio.SettingsBindFlags.DEFAULT);
@@ -164,6 +173,7 @@ class Preferences {
         settings.bind(Utils.PrefFields.PADDING_VERTICAL,    this.paddingVertical,       'value',  Gio.SettingsBindFlags.DEFAULT);
         settings.bind(Utils.PrefFields.ANIMATION_DIRECTION, this.animationDirection,    'active', Gio.SettingsBindFlags.DEFAULT);
         settings.bind(Utils.PrefFields.ANIMATION_TIME,      this.animationTime,         'value',  Gio.SettingsBindFlags.DEFAULT);
+        settings.bind(Utils.PrefFields.ALWAYS_MINIMIZE,     this.alwaysMinimize,        'active', Gio.SettingsBindFlags.DEFAULT);
     }
 
     _create_options(opts) {
