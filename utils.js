@@ -5,4 +5,5 @@ var PrefFields = {
     PADDING_HORIZONTAL     : 'padding-horizontal',
     ANIMATION_TIME         : 'animation-time',
     ANIMATION_DIRECTION    : 'animation-direction',
+    ALWAYS_MINIMIZE        : 'always-minimized',
 };
