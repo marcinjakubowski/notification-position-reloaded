@@ -34,10 +34,11 @@ let PADDING_VERTICAL = 0;
 let PADDING_HORIZONTAL = 0;
 let ALWAYS_MINIMIZE = 0;
 
-function patcher(obj, method, original, patch) {
+function patcher(obj, live, method, original, patch) {
     const body = eval(`${obj}.prototype.${method}.toString()`);
     const newBody = body.replace(original, patch).replace(method + "(", "function(")
     eval(`${obj}.prototype.${method} = ${newBody}`);
+    eval(`${live}.${method} = ${newBody}`);
 }
 
 const getMessageTraySize = () => ({ width, height } = Main.layoutManager.getWorkAreaForMonitor(global.display.get_current_monitor()));
@@ -89,7 +90,6 @@ function calcHide(self) {
             y = getMessageTraySize().height
             break;
     }
-
     return { x, y }
 }
 
@@ -127,16 +127,19 @@ function calcStart(self) {
 const patches = [
     { 
         "obj": "MessageTray", "method": "_updateShowingNotification",
+        "live": "Main.messageTray",
         "original": 'y: 0',
         "patch": '...calcTarget(this)'
     },
     { 
         "obj": "MessageTray", "method": "_showNotification",
+        "live": "Main.messageTray",
         "original": 'this._bannerBin.y = -this._banner.height',
         "patch": 'calcStart(this)'
     },
     { 
         "obj": "MessageTray", "method": "_hideNotification",
+        "live": "Main.messageTray",
         "original": 'y: -this._bannerBin.height',
         "patch": '...calcHide(this)'
     }
@@ -144,6 +147,7 @@ const patches = [
 
 const always_minimize_patch = {
     obj: "MessageTray",
+    live: "Main.messageTray",
     method: "_updateShowingNotification",
     original: "this._expandBanner(true)",
     patch: "// always minimized setting enabled by notification-banner-reloaded ... this._expandBanner(true)",
@@ -188,13 +192,13 @@ class Extension {
         BannerBin.set_x_align(x_align);
         BannerBin.set_y_align(y_align);
         this.restore();
-        for (const { obj, method, original, patch } of patches) {
-            patcher(obj, method, original, patch)
+        for (const { obj, live, method, original, patch } of patches) {
+            patcher(obj, live, method, original, patch)
         }
 
         if (ALWAYS_MINIMIZE) {
-            const { obj, method, original, patch } = always_minimize_patch;
-            patcher(obj, method, original, patch);
+            const { obj, live, method, original, patch } = always_minimize_patch;
+            patcher(obj, live, method, original, patch);
         }
     }
 
