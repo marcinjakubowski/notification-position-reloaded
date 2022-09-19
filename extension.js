@@ -41,7 +41,7 @@ function patcher(obj, live, method, original, patch) {
     eval(`${live}.${method} = ${newBody}`);
 }
 
-const getMessageTraySize = () => ({ width, height } = Main.layoutManager.getWorkAreaForMonitor(global.display.get_current_monitor()));
+const getMessageTraySize = () => ({ width, height } = Main.layoutManager.getWorkAreaForMonitor(global.display.get_primary_monitor()));
 
 const originalShow = MessageTray.prototype._showNotification;
 const originalHide = MessageTray.prototype._hideNotification;
