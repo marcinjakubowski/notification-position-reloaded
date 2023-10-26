@@ -24,14 +24,13 @@ import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 
-const ExtensionUtils = imports.misc.extensionUtils;
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
 import * as Utils from './utils.js';
 
 const BannerBin = Main.messageTray._bannerBin;
-const { NOTIFICATION_TIMEOUT, HIDE_TIMEOUT, LONGER_HIDE_TIMEOUT, IDLE_TIME, State, Urgency } = imports.ui.messageTray;
+import {NOTIFICATION_TIMEOUT, HIDE_TIMEOUT, LONGER_HIDE_TIMEOUT, IDLE_TIME, State, Urgency } from 'resource:///org/gnome/shell/ui/messageTray.js';
 
 let ANIMATION_TIME = 200;
 let ANIMATION_DIRECTION = 2;
