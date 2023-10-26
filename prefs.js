@@ -21,15 +21,13 @@
     https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator
     https://extensions.gnome.org/extension/779/clipboard-indicator/
 */
-const GObject = imports.gi.GObject;
-const Gtk = imports.gi.Gtk;
-const Gio = imports.gi.Gio;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const Utils = Me.imports.utils;
+import GObject from 'gi://GObject';
+import Gtk from 'gi://Gtk';
+import Gio from 'gi://Gio';
+import * as Utils from './utils.js';
 
-const Gettext = imports.gettext;
-const _ = Gettext.domain('notification-banner-reloaded').gettext;
+import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+
 
 // API change 3 -> 4
 function addBox(box, child) {
@@ -42,12 +40,12 @@ function addBox(box, child) {
 }
 
 function init() {
-    let localeDir = Me.dir.get_child('locale');
+    let localeDir = './locale';
     if (localeDir.query_exists(null))
         Gettext.bindtextdomain('notification-banner-reloaded', localeDir.get_path());
 }
 
-class Preferences {
+export default class NotificationExtensionPreferences extends ExtensionPreferences {
     constructor() {
         this.main = new Gtk.Grid({
             margin_top: 10,
@@ -166,7 +164,7 @@ class Preferences {
         addRow(animationTimeLabel,        this.animationTime);
         addRow(alwaysMinimizeLabel,       this.alwaysMinimize);
 
-        const settings = ExtensionUtils.getSettings();
+        const settings = this.getSettings();
         settings.bind(Utils.PrefFields.ANCHOR_HORIZONTAL,   this.anchorHorizontal,      'active', Gio.SettingsBindFlags.DEFAULT);
         settings.bind(Utils.PrefFields.ANCHOR_VERTICAL,     this.anchorVertical,        'active', Gio.SettingsBindFlags.DEFAULT);
         settings.bind(Utils.PrefFields.PADDING_HORIZONTAL,  this.paddingHorizontal,     'value',  Gio.SettingsBindFlags.DEFAULT);
