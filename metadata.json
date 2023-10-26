@@ -5,11 +5,7 @@
   "description": "Configure notification banner position and animation to your liking",
   "uuid": "notification-banner-reloaded@marcinjakubowski.github.com",
   "shell-version": [
-    "41",
-    "40",
-    "42",
-    "43",
-    "44"
+    "45",
   ],
   "url": "https://github.com/marcinjakubowski/notification-position-reloaded",
   "settings-schema": "org.gnome.shell.extensions.notification-banner-reloaded"
