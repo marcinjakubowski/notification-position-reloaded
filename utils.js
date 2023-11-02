@@ -1,4 +1,4 @@
-var PrefFields = {
+export const PrefFields = {
     ANCHOR_VERTICAL        : 'anchor-vertical',
     ANCHOR_HORIZONTAL      : 'anchor-horizontal',
     PADDING_VERTICAL       : 'padding-vertical',

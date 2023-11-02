@@ -16,50 +16,80 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-const { Clutter, Gio, GLib, GObject, Meta, Shell, St } = imports.gi;
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const Main = imports.ui.main;
-const MessageTray = imports.ui.messageTray.MessageTray;
-const Utils = Me.imports.utils;
+import Clutter from 'gi://Clutter';
+import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
+import Meta from 'gi://Meta';
+import Shell from 'gi://Shell';
+import St from 'gi://St';
+
+
+
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as Utils from './utils.js';
+
+const NOTIFICATION_TIMEOUT = 4000;
+const HIDE_TIMEOUT = 200;
+const LONGER_HIDE_TIMEOUT = 600;
+const IDLE_TIME = 1000;
+
+import { State, Urgency } from 'resource:///org/gnome/shell/ui/messageTray.js';
+import { MessageTray } from 'resource:///org/gnome/shell/ui/messageTray.js';
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
+
 const BannerBin = Main.messageTray._bannerBin;
-const { NOTIFICATION_TIMEOUT, HIDE_TIMEOUT, LONGER_HIDE_TIMEOUT, IDLE_TIME, State, Urgency } = imports.ui.messageTray;
+
 
 let ANIMATION_TIME = 200;
-let ANIMATION_DIRECTION = 2;
-let ANCHOR_VERTICAL = 0;
-let ANCHOR_HORIZONTAL = 2;
+let ANIMATION_DIRECTION = 0;
+let ANCHOR_VERTICAL = 1;
+let ANCHOR_HORIZONTAL = 0;
 let PADDING_VERTICAL = 0;
 let PADDING_HORIZONTAL = 0;
 let ALWAYS_MINIMIZE = 0;
 
 function patcher(obj, live, method, original, patch) {
     const body = eval(`${obj}.prototype.${method}.toString()`);
+    console.log(`body is ${body}`)
     const newBody = body.replace(original, patch).replace(method + "(", "function(")
+    console.log(`new body is ${newBody.replace('\n', ' ')}`)
     eval(`${obj}.prototype.${method} = ${newBody}`);
     eval(`${live}.${method} = ${newBody}`);
 }
 
-const getMessageTraySize = () => ({ width, height } = Main.layoutManager.getWorkAreaForMonitor(global.display.get_primary_monitor()));
+function getMessageTraySize() {
+    console.log('get message')
+    const monitor = global.display.get_primary_monitor()
+    console.log(`monitor is ${monitor}`)
+    const { width, height } = Main.layoutManager.getWorkAreaForMonitor(monitor)
+    console.log(`w h is  ${width}, ${height}`)
+    return { width, height }
+}
 
-const originalShow = MessageTray.prototype._showNotification;
-const originalHide = MessageTray.prototype._hideNotification;
-const originalUpdateShowing = MessageTray.prototype._updateShowingNotification;
 
 function calcTarget(self) {
+    console.log("target")
     let x = 0, y = 0;
+    console.log("target 1");
     switch (ANCHOR_HORIZONTAL) {
         case 0: // left
+            console.log("target case 0");
             x = 0 + PADDING_HORIZONTAL;
             break;
         case 1: // right
+            console.log("target case 1");
             x = getMessageTraySize().width - self._banner.width - PADDING_HORIZONTAL;
+            console.log("target case 1b");
             break;
         case 2: // center
+            console.log("target case 2");
             x = (getMessageTraySize().width - self._banner.width) / 2.0;
+            console.log("target case 2b");
             break;
     }
+    console.log("target mid");
     switch (ANCHOR_VERTICAL) {
         case 0: // top
             y = 0 + PADDING_VERTICAL;
@@ -71,10 +101,12 @@ function calcTarget(self) {
             y = (getMessageTraySize().height - self._banner.height) / 2.0;
             break;
     }
+    console.log(`target x, y is ${x}, ${y}`);
     return { x, y }
 }
 
 function calcHide(self) {
+    console.log("hide")
     let { x, y } = calcTarget(self)
     switch (ANIMATION_DIRECTION) {
         case 0: // from left
@@ -90,10 +122,12 @@ function calcHide(self) {
             y = getMessageTraySize().height
             break;
     }
+    console.log(`hide x, y is ${x}, ${y}`)
     return { x, y }
 }
 
 function calcStart(self) {
+    console.log("start")
     const { x, y } = calcHide(self);
     self._bannerBin.x = x;
     self._bannerBin.y = y;
@@ -153,14 +187,9 @@ const always_minimize_patch = {
     patch: "// always minimized setting enabled by notification-banner-reloaded ... this._expandBanner(true)",
 };
 
-class Extension {
-    constructor() {
-        this._previous_y_align = BannerBin.get_y_align();
-        this._previous_x_align = BannerBin.get_x_align();
-    }
-
+export default class NotificationBannerReloaded extends Extension {
     _loadSettings() {
-        this._settings = ExtensionUtils.getSettings();
+        this._settings = this.getSettings();
         this._settingsChangedId = this._settings.connect('changed', this._onSettingsChange.bind(this));
         this._fetchSettings();
     }
@@ -181,7 +210,18 @@ class Extension {
     }
 
     enable() {
-        this._loadSettings();        
+        if (!!!this.saved) {
+            this._originalShow = MessageTray.prototype._showNotification;
+            this._originalHide = MessageTray.prototype._hideNotification;
+            this._originalUpdateShowing = MessageTray.prototype._updateShowingNotification;
+            this._previous_y_align = BannerBin.get_y_align();
+            this._previous_x_align = BannerBin.get_x_align();
+            this.saved = true
+        }
+        this._loadSettings();
+        console.log(`hello, enabling, ${this._originalShow}`);
+        
+        //this._loadSettings();        
         // generally alignment can be controller with START/CENTER/END
         // but CENTER and END are problematic to implement animations with
         // (especially x -> END and animations from left/right)
@@ -203,6 +243,7 @@ class Extension {
     }
 
     disable() {
+      console.log("bye, disabling");
         BannerBin.set_x_align(this._previous_x_align);
         BannerBin.set_y_align(this._previous_y_align);
         BannerBin.x = 0
@@ -217,13 +258,9 @@ class Extension {
     }
 
     restore() {
-        MessageTray.prototype._hideNotification = originalHide;
-        MessageTray.prototype._showNotification = originalShow;
-        MessageTray.prototype._updateShowingNotification = originalUpdateShowing;
+        MessageTray.prototype._hideNotification = this._originalHide;
+        MessageTray.prototype._showNotification = this._originalShow;
+        MessageTray.prototype._updateShowingNotification = this._originalUpdateShowing;
     }
-}
-
-function init() {
-    return new Extension();
 }
 

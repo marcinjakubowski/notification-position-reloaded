@@ -21,34 +21,36 @@
     https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator
     https://extensions.gnome.org/extension/779/clipboard-indicator/
 */
-const GObject = imports.gi.GObject;
-const Gtk = imports.gi.Gtk;
-const Gio = imports.gi.Gio;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const Utils = Me.imports.utils;
 
-const Gettext = imports.gettext;
-const _ = Gettext.domain('notification-banner-reloaded').gettext;
+import Adw from 'gi://Adw';
+import Gtk from 'gi://Gtk';
+import GObject from 'gi://GObject';
+import Gio from 'gi://Gio';
 
-// API change 3 -> 4
-function addBox(box, child) {
-    if (imports.gi.versions.Gtk.startsWith("3")) {
-        box.add(child);
-    }
-    else {
-        box.append(child);
-    }
-}
+import * as Utils from './utils.js';
 
-function init() {
-    let localeDir = Me.dir.get_child('locale');
-    if (localeDir.query_exists(null))
-        Gettext.bindtextdomain('notification-banner-reloaded', localeDir.get_path());
-}
+import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
-class Preferences {
-    constructor() {
+
+export default class NotificationBannerReloaded extends ExtensionPreferences {
+    // fillPreferencesWindow(window) {
+    //     window._settings = this.getSettings();
+    //     const page = new Adw.PreferencesPage();
+
+    //     const group = new Adw.PreferencesGroup({
+    //         title: _('Group Title'),
+    //     });
+    //     page.add(group);
+
+    //     window.add(page);
+    // }
+    fillPreferencesWindow(window) {
+        window._settings = this.getSettings();
+        const page = new Adw.PreferencesPage();
+
+        
+        
+    
         this.main = new Gtk.Grid({
             margin_top: 10,
             margin_bottom: 10,
@@ -166,14 +168,16 @@ class Preferences {
         addRow(animationTimeLabel,        this.animationTime);
         addRow(alwaysMinimizeLabel,       this.alwaysMinimize);
 
-        const settings = ExtensionUtils.getSettings();
-        settings.bind(Utils.PrefFields.ANCHOR_HORIZONTAL,   this.anchorHorizontal,      'active', Gio.SettingsBindFlags.DEFAULT);
-        settings.bind(Utils.PrefFields.ANCHOR_VERTICAL,     this.anchorVertical,        'active', Gio.SettingsBindFlags.DEFAULT);
-        settings.bind(Utils.PrefFields.PADDING_HORIZONTAL,  this.paddingHorizontal,     'value',  Gio.SettingsBindFlags.DEFAULT);
-        settings.bind(Utils.PrefFields.PADDING_VERTICAL,    this.paddingVertical,       'value',  Gio.SettingsBindFlags.DEFAULT);
-        settings.bind(Utils.PrefFields.ANIMATION_DIRECTION, this.animationDirection,    'active', Gio.SettingsBindFlags.DEFAULT);
-        settings.bind(Utils.PrefFields.ANIMATION_TIME,      this.animationTime,         'value',  Gio.SettingsBindFlags.DEFAULT);
-        settings.bind(Utils.PrefFields.ALWAYS_MINIMIZE,     this.alwaysMinimize,        'active', Gio.SettingsBindFlags.DEFAULT);
+        window._settings.bind(Utils.PrefFields.ANCHOR_HORIZONTAL,   this.anchorHorizontal,      'active', Gio.SettingsBindFlags.DEFAULT);
+        window._settings.bind(Utils.PrefFields.ANCHOR_VERTICAL,     this.anchorVertical,        'active', Gio.SettingsBindFlags.DEFAULT);
+        window._settings.bind(Utils.PrefFields.PADDING_HORIZONTAL,  this.paddingHorizontal,     'value',  Gio.SettingsBindFlags.DEFAULT);
+        window._settings.bind(Utils.PrefFields.PADDING_VERTICAL,    this.paddingVertical,       'value',  Gio.SettingsBindFlags.DEFAULT);
+        window._settings.bind(Utils.PrefFields.ANIMATION_DIRECTION, this.animationDirection,    'active', Gio.SettingsBindFlags.DEFAULT);
+        window._settings.bind(Utils.PrefFields.ANIMATION_TIME,      this.animationTime,         'value',  Gio.SettingsBindFlags.DEFAULT);
+        window._settings.bind(Utils.PrefFields.ALWAYS_MINIMIZE,     this.alwaysMinimize,        'active', Gio.SettingsBindFlags.DEFAULT);
+
+        page.add(this.main)
+        window.add(page);
     }
 
     _create_options(opts) {
@@ -187,14 +191,15 @@ class Preferences {
         }
         return liststore;
     }
-};
-
-function buildPrefsWidget() {
-    let frame = new Gtk.Box();
-    let widget = new Preferences();
-    addBox(frame, widget.main);
-    if (frame.show_all)
-	    frame.show_all();
-    return frame;
 }
+// };
+
+// function buildPrefsWidget() {
+//     let frame = new Gtk.Box();
+//     let widget = new Preferences();
+//     addBox(frame, widget.main);
+//     if (frame.show_all)
+// 	    frame.show_all();
+//     return frame;
+// }
 
