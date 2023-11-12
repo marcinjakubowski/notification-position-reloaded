@@ -24,13 +24,18 @@ import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 
-import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
+import { MessageTray } from 'resource:///org/gnome/shell/ui/messageTray.js';
 import * as Utils from './utils.js';
 
 const BannerBin = Main.messageTray._bannerBin;
-import {NOTIFICATION_TIMEOUT, HIDE_TIMEOUT, LONGER_HIDE_TIMEOUT, IDLE_TIME, State, Urgency } from 'resource:///org/gnome/shell/ui/messageTray.js';
+import { State, Urgency } from 'resource:///org/gnome/shell/ui/messageTray.js';
+
+const NOTIFICATION_TIMEOUT = 4000;
+const HIDE_TIMEOUT = 200;
+const LONGER_HIDE_TIMEOUT = 600;
+const IDLE_TIME = 1000;
 
 let ANIMATION_TIME = 200;
 let ANIMATION_DIRECTION = 2;
@@ -47,7 +52,11 @@ function patcher(obj, live, method, original, patch) {
     eval(`${live}.${method} = ${newBody}`);
 }
 
-const getMessageTraySize = () => ({ width, height } = Main.layoutManager.getWorkAreaForMonitor(global.display.get_primary_monitor()));
+const getMessageTraySize = () => {
+    var width, height;
+    var { width, height } = Main.layoutManager.getWorkAreaForMonitor(global.display.get_primary_monitor());
+    return {width, height};
+}
 
 const originalShow = MessageTray.prototype._showNotification;
 const originalHide = MessageTray.prototype._hideNotification;
@@ -160,7 +169,8 @@ const always_minimize_patch = {
 };
 
 export default class NotificationExtension extends Extension {
-    constructor() {
+    constructor(metadata) {
+        super(metadata);
         this._previous_y_align = BannerBin.get_y_align();
         this._previous_x_align = BannerBin.get_x_align();
     }

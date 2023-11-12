@@ -46,7 +46,23 @@ function init() {
 }
 
 export default class NotificationExtensionPreferences extends ExtensionPreferences {
-    constructor() {
+    constructor(metadata) {
+        super(metadata);
+    }
+
+    getPreferencesWidget() {
+        let frame = new Gtk.Box();
+        let widget = new Preferences(this.getSettings());
+        addBox(frame, widget.main);
+        if (frame.show_all)
+            frame.show_all();
+        return frame;
+    }
+}
+
+class Preferences{
+    constructor(settings) {
+        this.settings = settings
         this.main = new Gtk.Grid({
             margin_top: 10,
             margin_bottom: 10,
@@ -164,7 +180,6 @@ export default class NotificationExtensionPreferences extends ExtensionPreferenc
         addRow(animationTimeLabel,        this.animationTime);
         addRow(alwaysMinimizeLabel,       this.alwaysMinimize);
 
-        const settings = this.getSettings();
         settings.bind(Utils.PrefFields.ANCHOR_HORIZONTAL,   this.anchorHorizontal,      'active', Gio.SettingsBindFlags.DEFAULT);
         settings.bind(Utils.PrefFields.ANCHOR_VERTICAL,     this.anchorVertical,        'active', Gio.SettingsBindFlags.DEFAULT);
         settings.bind(Utils.PrefFields.PADDING_HORIZONTAL,  this.paddingHorizontal,     'value',  Gio.SettingsBindFlags.DEFAULT);
@@ -186,13 +201,3 @@ export default class NotificationExtensionPreferences extends ExtensionPreferenc
         return liststore;
     }
 };
-
-function buildPrefsWidget() {
-    let frame = new Gtk.Box();
-    let widget = new Preferences();
-    addBox(frame, widget.main);
-    if (frame.show_all)
-	    frame.show_all();
-    return frame;
-}
-
