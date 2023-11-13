@@ -24,6 +24,7 @@
 import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
 import * as Utils from './utils.js';
 
 import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
@@ -107,6 +108,30 @@ class Preferences{
         this.alwaysMinimize = new Gtk.ComboBox({
           model: this._create_options([ _('false'), _('true')])
         });
+        this.testButton = new Gtk.Button({ label: _("Test") });
+        this.testButton.connect('clicked', () => {
+            const notification = new GLib.Variant('(susssasa{sv}i)', [
+                'Notification Banner Reloaded',
+                0,
+                'dialog-information-symbolic',
+                'Notification Banner Reloaded',
+                'Test',
+                [],
+                {},
+                -1,
+            ]);
+            Gio.DBus.session.call(
+                'org.freedesktop.Notifications',
+                '/org/freedesktop/Notifications',
+                'org.freedesktop.Notifications',
+                'Notify',
+                notification,
+                null,
+                Gio.DBusCallFlags.NONE,
+                -1,
+                null,
+                null);
+        });
 
         let rendererText = new Gtk.CellRendererText();
         for (const widget of [this.anchorHorizontal, this.anchorVertical, this.animationDirection, this.alwaysMinimize]) {
@@ -150,6 +175,12 @@ class Preferences{
           halign: Gtk.Align.START
         });
 
+        const testButtonLabel = new Gtk.Label({
+            label: _("Send Test Notification"),
+            hexpand: true,
+            halign: Gtk.Align.START
+        });
+
         const addRow = ((main) => {
             let row = 0;
             return (label, input) => {
@@ -179,6 +210,7 @@ class Preferences{
         addRow(animationDirectionLabel,   this.animationDirection);
         addRow(animationTimeLabel,        this.animationTime);
         addRow(alwaysMinimizeLabel,       this.alwaysMinimize);
+        addRow(testButtonLabel,           this.testButton);
 
         settings.bind(Utils.PrefFields.ANCHOR_HORIZONTAL,   this.anchorHorizontal,      'active', Gio.SettingsBindFlags.DEFAULT);
         settings.bind(Utils.PrefFields.ANCHOR_VERTICAL,     this.anchorVertical,        'active', Gio.SettingsBindFlags.DEFAULT);
