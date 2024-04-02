@@ -17,12 +17,7 @@
  */
 
 import Clutter from 'gi://Clutter';
-import Gio from 'gi://Gio';
-import GLib from 'gi://GLib';
-import GObject from 'gi://GObject';
-import Meta from 'gi://Meta';
-import Shell from 'gi://Shell';
-import St from 'gi://St';
+
 
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -30,7 +25,17 @@ import { MessageTray } from 'resource:///org/gnome/shell/ui/messageTray.js';
 import * as Utils from './utils.js';
 
 const BannerBin = Main.messageTray._bannerBin;
+
+/* Imports necessary by the code pulled in from messageTray.js */
 import { State, Urgency } from 'resource:///org/gnome/shell/ui/messageTray.js';
+import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
+import Meta from 'gi://Meta';
+import Shell from 'gi://Shell';
+import St from 'gi://St';
+import * as Calendar from 'resource:///org/gnome/shell/ui/calendar.js'
+
 
 const NOTIFICATION_TIMEOUT = 4000;
 const HIDE_TIMEOUT = 200;
@@ -53,8 +58,7 @@ function patcher(obj, live, method, original, patch) {
 }
 
 const getMessageTraySize = () => {
-    var width, height;
-    var { width, height } = Main.layoutManager.getWorkAreaForMonitor(global.display.get_primary_monitor());
+    const { width, height } = Main.layoutManager.getWorkAreaForMonitor(global.display.get_primary_monitor());
     return {width, height};
 }
 
@@ -238,8 +242,3 @@ export default class NotificationExtension extends Extension {
         MessageTray.prototype._updateShowingNotification = originalUpdateShowing;
     }
 }
-
-function init() {
-    return new Extension();
-}
-

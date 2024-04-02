@@ -29,23 +29,6 @@ import * as Utils from './utils.js';
 
 import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
-
-// API change 3 -> 4
-function addBox(box, child) {
-    if (imports.gi.versions.Gtk.startsWith("3")) {
-        box.add(child);
-    }
-    else {
-        box.append(child);
-    }
-}
-
-function init() {
-    let localeDir = './locale';
-    if (localeDir.query_exists(null))
-        Gettext.bindtextdomain('notification-banner-reloaded', localeDir.get_path());
-}
-
 export default class NotificationExtensionPreferences extends ExtensionPreferences {
     constructor(metadata) {
         super(metadata);
@@ -54,7 +37,7 @@ export default class NotificationExtensionPreferences extends ExtensionPreferenc
     getPreferencesWidget() {
         let frame = new Gtk.Box();
         let widget = new Preferences(this.getSettings());
-        addBox(frame, widget.main);
+        frame.append(widget.main);
         if (frame.show_all)
             frame.show_all();
         return frame;
