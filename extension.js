@@ -35,6 +35,7 @@ import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 import * as Calendar from 'resource:///org/gnome/shell/ui/calendar.js'
+import * as MessageList from 'resource:///org/gnome/shell/ui/messageList.js'
 
 
 const NOTIFICATION_TIMEOUT = 4000;
