@@ -197,11 +197,41 @@ class Preferences{
 
         settings.bind(Utils.PrefFields.ANCHOR_HORIZONTAL,   this.anchorHorizontal,      'active', Gio.SettingsBindFlags.DEFAULT);
         settings.bind(Utils.PrefFields.ANCHOR_VERTICAL,     this.anchorVertical,        'active', Gio.SettingsBindFlags.DEFAULT);
-        settings.bind(Utils.PrefFields.PADDING_HORIZONTAL,  this.paddingHorizontal,     'value',  Gio.SettingsBindFlags.DEFAULT);
-        settings.bind(Utils.PrefFields.PADDING_VERTICAL,    this.paddingVertical,       'value',  Gio.SettingsBindFlags.DEFAULT);
         settings.bind(Utils.PrefFields.ANIMATION_DIRECTION, this.animationDirection,    'active', Gio.SettingsBindFlags.DEFAULT);
-        settings.bind(Utils.PrefFields.ANIMATION_TIME,      this.animationTime,         'value',  Gio.SettingsBindFlags.DEFAULT);
         settings.bind(Utils.PrefFields.ALWAYS_MINIMIZE,     this.alwaysMinimize,        'active', Gio.SettingsBindFlags.DEFAULT);
+    
+        this._bindSpinWithThrottle(this.paddingHorizontal, Utils.PrefFields.PADDING_HORIZONTAL);
+        this._bindSpinWithThrottle(this.paddingVertical, Utils.PrefFields.PADDING_VERTICAL);
+        this._bindSpinWithThrottle(this.animationTime, Utils.PrefFields.ANIMATION_TIME);
+    }
+
+    _bindSpinWithThrottle(spinButton, key) {
+        /*- Load value from settings -*/
+        spinButton.value = this.settings.get_int(key);
+        let timeoutId = 0;
+        const updateSettings = () => {
+            const newVal = Math.round(spinButton.value);
+            if (this.settings.get_int(key) !== newVal) {
+                this.settings.set_int(key, newVal);
+            }
+            timeoutId = 0;
+            return GLib.SOURCE_REMOVE;
+        };
+    
+        spinButton.connect('value-changed', () => {
+            if (timeoutId) {
+                GLib.source_remove(timeoutId);
+            }
+            timeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, updateSettings);
+        });
+    
+        /*- If the user update elsewhere, we update spin value -*/
+        this.settings.connect(`changed::${key}`, () => {
+            const val = this.settings.get_int(key);
+            if (Math.round(spinButton.value) !== val) {
+                spinButton.value = val;
+            }
+        });
     }
 
     _create_options(opts) {
