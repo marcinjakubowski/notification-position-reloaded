@@ -67,17 +67,25 @@ const originalShow = MessageTray.prototype._showNotification;
 const originalHide = MessageTray.prototype._hideNotification;
 const originalUpdateShowing = MessageTray.prototype._updateShowingNotification;
 
+function getActorSize(actor) {
+    const width = actor.width || actor.get_preferred_width(-1)[1];
+    const height = actor.height || actor.get_preferred_height(width)[1];
+    return { width, height };
+}
+
 function calcTarget(self) {
     let x = 0, y = 0;
+    const traySize = getMessageTraySize();
+    const bannerSize = getActorSize(self._banner);
     switch (ANCHOR_HORIZONTAL) {
         case 0: // left
             x = 0 + PADDING_HORIZONTAL;
             break;
         case 1: // right
-            x = getMessageTraySize().width - self._banner.width - PADDING_HORIZONTAL;
+            x = traySize.width - bannerSize.width - PADDING_HORIZONTAL;
             break;
         case 2: // center
-            x = (getMessageTraySize().width - self._banner.width) / 2.0;
+            x = (traySize.width - bannerSize.width) / 2.0;
             break;
     }
     switch (ANCHOR_VERTICAL) {
@@ -85,10 +93,10 @@ function calcTarget(self) {
             y = 0 + PADDING_VERTICAL;
             break;
         case 1: // bottom
-            y = getMessageTraySize().height - self._banner.height - PADDING_VERTICAL;
+            y = traySize.height - bannerSize.height - PADDING_VERTICAL;
             break;
         case 2: // center
-            y = (getMessageTraySize().height - self._banner.height) / 2.0;
+            y = (traySize.height - bannerSize.height) / 2.0;
             break;
     }
     return { x, y }
@@ -96,18 +104,20 @@ function calcTarget(self) {
 
 function calcHide(self) {
     let { x, y } = calcTarget(self)
+    const traySize = getMessageTraySize();
+    const bannerSize = getActorSize(self._banner);
     switch (ANIMATION_DIRECTION) {
         case 0: // from left
-            x = -self._banner.width;
+            x = -bannerSize.width;
             break;
         case 1: // from right
-            x = getMessageTraySize().width;
+            x = traySize.width;
             break;
         case 2: // from top
-            y = -self._banner.height
+            y = -bannerSize.height
             break;
         case 3: // from bottom
-            y = getMessageTraySize().height
+            y = traySize.height
             break;
     }
     return { x, y }
