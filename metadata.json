@@ -4,7 +4,7 @@
   "description": "Configure notification banner position and animation to your liking.\nVersion 9: Gnome 45 changes by mannjani@github\nVersion 10: mannjani@github added a test button inside prefs",
   "uuid": "notification-banner-re-reloaded@chrhuang",
   "shell-version": [
-    "45", "46", "47", "48", "49", "50"
+    "45", "46", "47", "48", "49", "50", "51"
   ],
   "url": "https://github.com/chrishuan9/notification-banner-re-reloaded",
   "settings-schema": "org.gnome.shell.extensions.notification-banner-re-reloaded"
