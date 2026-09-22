@@ -60,12 +60,12 @@ jobs:
           cp schemas/*.gschema.xml dist/schemas/
           jq --argjson v "${{ steps.version.outputs.major }}" '.version = $v' metadata.json > dist/metadata.json
 
-      # GNOME extensions ship a compiled schema; recompiling here (rather than
-      # trusting the committed schemas/gschemas.compiled) guarantees the
-      # packaged binary always matches the .gschema.xml at release time, per
-      # the README requirement: `glib-compile-schemas schemas`.
-      - name: Compile GSettings schema
-        run: glib-compile-schemas dist/schemas
+      # Compile the schema to validate it, but do not ship the compiled
+      # binary — GNOME Shell compiles schemas at install time.
+      - name: Compile GSettings schema (validate only)
+        run: |
+          glib-compile-schemas dist/schemas
+          rm dist/schemas/gschemas.compiled
 
       # Guards against the review-guideline rule at
       # https://gjs.guide/extensions/review-guidelines/review-guidelines.html#don-t-include-unnecessary-files
@@ -82,7 +82,6 @@ jobs:
           utils.js
           metadata.json
           schemas/org.gnome.shell.extensions.notification-banner-re-reloaded.gschema.xml
-          schemas/gschemas.compiled
           EOF
           )
           actual=$(find . -type f | sed 's|^\./||' | sort)
