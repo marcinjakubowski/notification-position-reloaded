@@ -172,6 +172,15 @@ const patches = [
         "live": "Main.messageTray",
         "original": 'y: -this._bannerBin.height',
         "patch": '...calcHide(this)'
+    },
+    {
+        // Backport GNOME Shell 93a79cf: interrupted hide animations must
+        // destroy the banner too, otherwise an invisible actor blocks clicks.
+        // Shell versions that already use onStopped are left unchanged.
+        "obj": "MessageTray", "method": "_hideNotification",
+        "live": "Main.messageTray",
+        "original": 'onComplete: () => {',
+        "patch": 'onStopped: () => {'
     }
 ];
 
